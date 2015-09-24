@@ -3,9 +3,9 @@
   "description": "the kit of mx-fe-bone",
   "author": "mx",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
-    "no": "no"
+    "no": "no",
+    "prepublish": "no build"
   },
   "repository": {
     "type": "git",
