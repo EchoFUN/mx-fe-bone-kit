@@ -1,17 +1,18 @@
-let isProduction = process.env.NODE_ENV === 'production';
-let cwd = process.cwd();
-let webpack = require('webpack');
-let kit = require('nokit');
-let _ = kit._;
+import webpack from 'webpack';
+import kit from 'nokit';
+import { srcJsPagePath, packageJsonPath, assetJsPagePath } from './public-env';
 
-let entry = kit.globSync(`${cwd}/src/js/page/**/*.js`).reduce((ret, p) => {
+let isProduction = process.env.NODE_ENV === 'production';
+let { _ } = kit;
+
+let entry = kit.globSync(`${srcJsPagePath}/**/*.js`).reduce((ret, p) => {
     ret[kit.path.basename(p, '.js')] = p;
     return ret;
 }, {});
 
-entry.vendor = _.keys(require(`${cwd}/package.json`).dependencies);
+entry.vendor = _.keys(require(packageJsonPath).dependencies);
 
-let self = module.exports = {
+let self = {
     entry: entry,
 
     plugins: [
@@ -23,7 +24,7 @@ let self = module.exports = {
 
     output: {
         filename: isProduction ? '[name].min.js' : '[name].js',
-        path: './asset/js/page'
+        path: assetJsPagePath
     },
 
     module: {
@@ -53,3 +54,5 @@ if (isProduction) {
     self.output.pathinfo = true;
     self.debug = true;
 }
+
+export default self;

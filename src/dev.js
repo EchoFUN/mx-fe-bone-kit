@@ -1,4 +1,5 @@
 import kit from 'nokit';
+import { webpackConfigPath, srcJsPagePath, packageJsonPath } from './public-env';
 
 let br = kit.require('brush');
 
@@ -18,18 +19,17 @@ export default async (opts) => {
         args: [require.resolve('./dev-server'), kit._.pick(
             opts,
             ['port', 'proxyPort', 'proxyHost']
-        )],
-        watchList: ['etc/**/*.js', 'page/**/*.js']
+        )]
     });
 
     await kit.sleep(1000);
 
     runWebpack();
     kit.watchFiles(
-        ['webpack.config.js', 'kit/**/*.js'],
+        [webpackConfigPath, packageJsonPath],
         { handler: runWebpack }
     );
-    kit.watchDir('src/js/page', {
+    kit.watchDir(srcJsPagePath, {
         patterns: '*.js',
         handler: (type) => {
             if (type === 'modify') { return; }

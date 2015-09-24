@@ -1,22 +1,36 @@
 import kit from 'nokit';
 import utils from './utils';
+import {
+    pageDevPath, assetPath, mockPath,
+    srcPath, faviconPath
+} from './public-env';
 
 let { _ } = kit;
 let br = kit.require('brush');
 let proxy = kit.require('proxy');
 let { match, select } = proxy;
 let serverHelper = proxy.serverHelper();
-let cwd = process.cwd();
 let opts = JSON.parse(process.argv[2]);
-let pageDev = require(`${cwd}/page/dev`);
+let pageDev = require(pageDevPath);
 
 // 总入口服务
 let app = proxy.flow();
 
-app.push.apply(app, _.flatten([
+app.push.apply(app, _.chain([
     utils.accessLog('access:'),
 
     serverHelper,
+
+    // 载入 mock 入口点
+    (async () => {
+        try {
+            let ret = await require(mockPath)(app, opts);
+            kit.logs(`load module "${mockPath}"`);
+            return ret;
+        } catch (err) {
+            kit.logs(br.yellow(`skip module "${mockPath}"`));
+        }
+    })(),
 
     // 入口页面路由
     select(match('/:page'), async ($) => {
@@ -30,24 +44,20 @@ app.push.apply(app, _.flatten([
     }),
 
     // favicon
-    select('/favicon.ico', kit.readFile('src/img/favicon.ico')),
+    select('/favicon.ico', kit.readFile(faviconPath)),
 
     // 静态资源
-    ['asset', 'src'].map(path => select('/asset', proxy.static({
+    [assetPath, srcPath].map(path => select('/asset', proxy.static({
         root: path,
         onFile: _.ary(serverHelper.watch, 1)
     })))
-]));
+]).flatten().compact().value());
 
 (async () => {
     if (opts.port === '<%= port %>')
         opts.port = 8080;
 
     utils.checkPort(opts.port);
-
-    opts.app = app;
-    utils.requireEtc('mock', opts);
-    utils.requireEtc('proxy', opts);
 
     await app.listen(opts.port);
 
