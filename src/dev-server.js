@@ -1,8 +1,7 @@
 import kit from 'nokit';
 import utils from './utils';
 
-let { _, Promise } = kit;
-global.Promise = Promise;
+let { _ } = kit;
 let br = kit.require('brush');
 let proxy = kit.require('proxy');
 let { match, select } = proxy;
@@ -41,6 +40,9 @@ app.push.apply(app, _.flatten([
 ]));
 
 (async () => {
+    if (opts.port === '<%= port %>')
+        opts.port = 8080;
+
     utils.checkPort(opts.port);
 
     opts.app = app;
@@ -50,4 +52,4 @@ app.push.apply(app, _.flatten([
     await app.listen(opts.port);
 
     kit.logs('dev server listen at:', br.cyan(opts.port));
-})();
+})().catch(kit.throw);

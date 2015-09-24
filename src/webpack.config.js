@@ -4,8 +4,8 @@ let webpack = require('webpack');
 let kit = require('nokit');
 let _ = kit._;
 
-let entry = kit.globSync(`${cwd}src/js/page/**/*.js`).reduce((ret, p) => {
-    ret[kit.path.basename(p, '.js')] = './' + p;
+let entry = kit.globSync(`${cwd}/src/js/page/**/*.js`).reduce((ret, p) => {
+    ret[kit.path.basename(p, '.js')] = p;
     return ret;
 }, {});
 

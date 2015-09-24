@@ -12,7 +12,7 @@ function runWebpack () {
     ).process;
 }
 
-export default (opts) => {
+export default async (opts) => {
     kit.monitorApp({
         bin: 'babel-node',
         args: [require.resolve('./dev-server'), kit._.pick(
@@ -21,6 +21,8 @@ export default (opts) => {
         )],
         watchList: ['etc/**/*.js', 'page/**/*.js']
     });
+
+    await kit.sleep(1000);
 
     runWebpack();
     kit.watchFiles(

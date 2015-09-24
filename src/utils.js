@@ -12,6 +12,7 @@ export default {
     async requireEtc (name, opts) {
         try {
             await require(`${cwd}/etc/${name}`)(opts);
+            kit.logs(`load module "etc/${name}"`);
         } catch (err) {
             kit.logs(br.yellow(`skip module "etc/${name}"`));
         }
