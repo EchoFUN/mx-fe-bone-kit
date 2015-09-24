@@ -1,6 +1,5 @@
 import kit from 'nokit';
 import utils from './utils';
-import pageDev from '../page/dev';
 
 let { _, Promise } = kit;
 global.Promise = Promise;
@@ -8,7 +7,9 @@ let br = kit.require('brush');
 let proxy = kit.require('proxy');
 let { match, select } = proxy;
 let serverHelper = proxy.serverHelper();
+let cwd = process.cwd();
 let opts = JSON.parse(process.argv[2]);
+let pageDev = require(`${cwd}/page/dev`);
 
 // 总入口服务
 let app = proxy.flow();

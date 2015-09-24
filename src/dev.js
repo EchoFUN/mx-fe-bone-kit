@@ -15,11 +15,11 @@ function runWebpack () {
 export default (opts) => {
     kit.monitorApp({
         bin: 'babel-node',
-        args: ['kit/dev-server.js', kit._.pick(
+        args: [require.resolve('./dev-server'), kit._.pick(
             opts,
             ['port', 'proxyPort', 'proxyHost']
         )],
-        watchList: ['kit/**/*.js', 'etc/**/*.js', 'page/**/*.js']
+        watchList: ['etc/**/*.js', 'page/**/*.js']
     });
 
     runWebpack();

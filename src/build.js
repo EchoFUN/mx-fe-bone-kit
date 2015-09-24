@@ -1,5 +1,6 @@
 import kit from 'nokit';
 let br = kit.require('brush');
+let cwd = process.cwd();
 
 export default (opts) => {
     kit.require('url');
@@ -29,7 +30,7 @@ export default (opts) => {
         let list = kit.globSync('src/js/page/*.js');
         list.forEach((path) => {
             let name = kit.path.basename(path, '.js');
-            let tpl = require('../page/dev')({
+            let tpl = require(`${cwd}/page/dev`)({
                 vendor: opts.cdnPrefix + '/' + hashMap['asset/js/page/vendor.min.js'],
                 page: opts.cdnPrefix + '/' + hashMap['asset/js/page/' + name + '.min.js']
             });
