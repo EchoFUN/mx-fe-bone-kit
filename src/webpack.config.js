@@ -19,7 +19,8 @@ let self = {
         new webpack.optimize.CommonsChunkPlugin(
             'vendor',
             isProduction ? 'vendor.min.js' : 'vendor.js'
-        )
+        ),
+        require('./webpack-notifier')()
     ],
 
     output: {
@@ -37,22 +38,32 @@ let self = {
                 test: /\.js?$/,
                 exclude: /node_modules/,
                 loader: 'babel?loose=all'
-            },
-            {
-                test: /\.js?$/,
-                exclude: /node_modules/,
-                loader: 'eslint'
             }
         ]
     }
 };
 
 if (isProduction) {
+
     self.plugins.push(new webpack.optimize.UglifyJsPlugin());
+
+    // eslint
+    self.module.preLoaders = [
+        {
+            test: /\.js?$/,
+            exclude: /node_modules/,
+            loader: 'eslint'
+        }
+    ];
+    self.eslint = {
+        failOnError: true
+    };
+
 } else {
-    self.plugins.push(require('./webpack-notifier')());
+
     self.output.pathinfo = true;
     self.debug = true;
+
 }
 
 export default self;
