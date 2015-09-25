@@ -13,6 +13,11 @@ let serverHelper = proxy.serverHelper();
 let opts = JSON.parse(process.argv[2]);
 let pageDev = require(pageDevPath);
 
+if (opts.port === '<%= port %>')
+    opts.port = 8080;
+
+utils.checkPort(opts.port);
+
 // 总入口服务
 let app = proxy.flow();
 
@@ -20,17 +25,6 @@ app.push.apply(app, _.chain([
     utils.accessLog('access:'),
 
     serverHelper,
-
-    // 载入 mock 入口点
-    (async () => {
-        try {
-            let ret = await require(mockPath)(app, opts);
-            kit.logs(`load module "${mockPath}"`);
-            return ret;
-        } catch (err) {
-            kit.logs(br.yellow(`skip module "${mockPath}"`));
-        }
-    })(),
 
     // 入口页面路由
     select(match('/:page'), async ($) => {
@@ -54,10 +48,17 @@ app.push.apply(app, _.chain([
 ]).flatten().compact().value());
 
 (async () => {
-    if (opts.port === '<%= port %>')
-        opts.port = 8080;
+    // 载入 mock 入口点
+    let isLoadMock = true;
+    try {
+        require.resolve(mockPath);
+        kit.logs(`load module "${mockPath}"`);
+    } catch (err) {
+        isLoadMock = false;
+        kit.logs(br.yellow(`skip module "${mockPath}"`));
+    }
 
-    utils.checkPort(opts.port);
+    if (isLoadMock) require(mockPath)(app, opts);
 
     await app.listen(opts.port);
 

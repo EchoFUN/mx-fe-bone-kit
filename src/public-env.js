@@ -7,7 +7,7 @@ let { _ } = kit;
 let cwd = process.cwd();
 
 export default _.reduce({
-    mockPath:             `etc/mock.js`,
+    mockPath:            `mock/index.js`,
 
     pagePath:            `page`,
     pageDevPath:         `page/dev.js`,

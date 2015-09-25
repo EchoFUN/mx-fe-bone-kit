@@ -1,5 +1,8 @@
 import kit from 'nokit';
-import { webpackConfigPath, srcJsPagePath, packageJsonPath } from './public-env';
+import {
+    webpackConfigPath, srcJsPagePath,
+    packageJsonPath, mockPath
+} from './public-env';
 
 let br = kit.require('brush');
 
@@ -18,8 +21,9 @@ export default async (opts) => {
         bin: 'babel-node',
         args: [require.resolve('./dev-server'), kit._.pick(
             opts,
-            ['port', 'proxyPort', 'proxyHost']
-        )]
+            opts.options.map(o => o.long.slice(2))
+        )],
+        watchList: [kit.path.dirname(mockPath) + '/**/*.js']
     });
 
     await kit.sleep(1000);
