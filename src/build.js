@@ -1,7 +1,28 @@
 import kit from 'nokit';
-import { hashMapPath, assetJsPath, assetPath, srcJsPagePath, pageDevPath } from './public-env';
+import publicEnv from './public-env';
 
+let { hashMapPath, assetJsPath, assetPath,
+    srcJsPagePath, pageDevPath
+} = publicEnv;
+
+let cwd = process.cwd();
 let br = kit.require('brush');
+let jhash = kit.require('jhash');
+jhash.setSymbols('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+
+function hashSuffix (hashMapPath) {
+    let map = {};
+    return kit._.assign(function (f) {
+        var src;
+        src = kit.path.relative(cwd, f.dest + '');
+        f.dest.name += '.' + jhash.hash(f.contents);
+        return map[src] = kit.path.relative(cwd, f.dest + '');
+    }, {
+        onEnd: function () {
+            return kit.outputJson(hashMapPath, map);
+        }
+    });
+}
 
 export default (opts) => {
     kit.require('url');
@@ -32,7 +53,7 @@ export default (opts) => {
             let name = kit.path.basename(path, '.js');
             let tpl = require(pageDevPath)({
                 vendor: opts.cdnPrefix + '/' + hashMap['asset/js/page/vendor.min.js'],
-                page: opts.cdnPrefix + '/' + hashMap['asset/js/page/' + name + '.min.js']
+                page: opts.cdnPrefix + '/' + hashMap[`asset/js/page/${name}.min.js`]
             });
             kit.outputFileSync(`${assetPath}/${name}.html`, tpl);
         });
@@ -40,7 +61,7 @@ export default (opts) => {
 
     return kit.warp(`${assetPath}/**`)
     .load(drives.reader({ isCache: false, encoding: null }))
-    .load(drives.hashSuffix(hashMapPath))
+    .load(hashSuffix(hashMapPath))
     .run(assetPath)
     .then(() => {
         return kit.readJson(hashMapPath);
