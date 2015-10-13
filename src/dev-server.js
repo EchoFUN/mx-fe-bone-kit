@@ -6,6 +6,7 @@ let {
     pageDevPath, assetPath, mockPath,
     srcPath, faviconPath
 } = config.paths;
+let rawPaths = config.rawPaths;
 let { _ } = kit;
 let br = kit.require('brush');
 let proxy = kit.require('proxy');
@@ -30,8 +31,8 @@ app.push.apply(app, _.chain([
     // 入口页面路由
     select(match('/:page'), async ($) => {
         let tpl = pageDev({
-            vendor: '/asset/js/page/vendor.js',
-            page: `/asset/js/page/${$.url.page}.js`
+            vendor: `/${rawPaths.assetPagePath}/vendor.js`,
+            page: `/${rawPaths.assetPagePath}/${$.url.page}.js`
         });
 
         // 插入自动重载等工具函数到页面
@@ -42,7 +43,7 @@ app.push.apply(app, _.chain([
     select('/favicon.ico', kit.readFile(faviconPath)),
 
     // 静态资源
-    [assetPath, srcPath].map(path => select('/asset', proxy.static({
+    [assetPath, srcPath].map(path => select(`/${rawPaths.assetPath}`, proxy.static({
         root: path,
         onFile: _.ary(serverHelper.watch, 1)
     })))

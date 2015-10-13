@@ -3,7 +3,7 @@ import kit from 'nokit';
 import config from './public-config';
 
 let {
-    srcPagePath, packageJsonPath, assetJsPagePath
+    srcPagePath, packageJsonPath, assetPagePath
 } = config.paths;
 
 let isProduction = process.env.NODE_ENV === 'production';
@@ -29,7 +29,7 @@ let self = {
 
     output: {
         filename: isProduction ? '[name].min.js' : '[name].js',
-        path: assetJsPagePath
+        path: assetPagePath
     },
 
     module: {

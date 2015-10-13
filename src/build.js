@@ -1,10 +1,11 @@
 import kit from 'nokit';
-import { paths } from './public-config';
+import config from './public-config';
 
-let { hashMapPath, assetJsPath, assetPath,
+let { hashMapPath, assetPath,
     srcPagePath, pageDevPath
-} = paths;
+} = config.paths;
 
+let { rawPaths } = config;
 let cwd = process.cwd();
 let br = kit.require('brush');
 let jhash = kit.require('jhash');
@@ -31,7 +32,7 @@ export default (opts) => {
     let drives = kit.require('drives');
 
     let compileCDN = (hashMap) => {
-        return kit.warp(`${assetJsPath}/**/*.js`)
+        return kit.warp(`${assetPath}/**/*.js`)
         .load(drives.reader({ isCache: false }))
         .load((f) => {
             f.set(f.contents.replace(regCDN, function (m, left, p, right) {
@@ -44,7 +45,7 @@ export default (opts) => {
                 return left + p + right;
             }));
         })
-        .run(assetJsPath);
+        .run(assetPath);
     };
 
     let compileTpl = (hashMap) => {
@@ -52,8 +53,8 @@ export default (opts) => {
         list.forEach((path) => {
             let name = kit.path.basename(path, '.js');
             let tpl = require(pageDevPath)({
-                vendor: opts.cdnPrefix + '/' + hashMap['asset/js/page/vendor.min.js'],
-                page: opts.cdnPrefix + '/' + hashMap[`asset/js/page/${name}.min.js`]
+                vendor: opts.cdnPrefix + '/' + hashMap[`${rawPaths.assetPagePath}/vendor.min.js`],
+                page: opts.cdnPrefix + '/' + hashMap[`${rawPaths.assetPagePath}/${name}.min.js`]
             });
             kit.outputFileSync(`${assetPath}/${name}.html`, tpl);
         });
