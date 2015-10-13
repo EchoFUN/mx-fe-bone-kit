@@ -2,8 +2,8 @@ import kit from 'nokit';
 import config from './public-config';
 
 let {
-    webpackConfigPath, srcPagePath,
-    packageJsonPath, mockPath
+    webpackConfig, srcPage,
+    packageJson, mock
 } = config.paths;
 
 let br = kit.require('brush');
@@ -25,17 +25,17 @@ export default async (opts) => {
             opts,
             opts.options.map(o => o.long.slice(2))
         )],
-        watchList: [kit.path.dirname(mockPath) + '/**/*.js']
+        watchList: [kit.path.dirname(mock) + '/**/*.js']
     });
 
     await kit.sleep(1000);
 
     runWebpack();
     kit.watchFiles(
-        [webpackConfigPath, packageJsonPath],
+        [webpackConfig, packageJson],
         { handler: runWebpack }
     );
-    kit.watchDir(srcPagePath, {
+    kit.watchDir(srcPage, {
         patterns: '*.js',
         handler: (type) => {
             if (type === 'modify') { return; }

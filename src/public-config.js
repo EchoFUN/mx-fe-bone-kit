@@ -10,21 +10,20 @@ let config = packageJson['mx-fe-bone'] || {};
 
 config = _.defaultsDeep(config, {
     paths: {
-        mockPath: 'mock/index.js',
+        mock: 'mock/index.js',
 
-        pagePath: 'page',
-        pageDevPath: 'page/dev.js',
+        pageDev: 'page/dev.js',
 
-        assetPath: 'asset',
-        assetPagePath: 'asset/page',
+        asset: 'asset',
+        assetPage: 'asset/page',
 
-        srcPath: 'src',
-        srcPagePath: 'src/page',
+        src: 'src',
+        srcPage: 'src/page',
 
-        faviconPath: 'src/img/favicon.ico',
-        hashMapPath: 'asset/hash-map.json',
-        webpackConfigPath: 'webpack.config.js',
-        packageJsonPath: 'package.json'
+        favicon: 'src/img/favicon.ico',
+        hashMap: 'asset/hash-map.json',
+        webpackConfig: 'webpack.config.js',
+        packageJson: 'package.json'
     }
 });
 

@@ -3,8 +3,8 @@ import utils from './utils';
 import config from './public-config';
 
 let {
-    pageDevPath, assetPath, mockPath,
-    srcPath, faviconPath
+    pageDev, asset, mock,
+    src, favicon
 } = config.paths;
 let rawPaths = config.rawPaths;
 let { _ } = kit;
@@ -13,7 +13,7 @@ let proxy = kit.require('proxy');
 let { match, select } = proxy;
 let serverHelper = proxy.serverHelper();
 let opts = JSON.parse(process.argv[2]);
-let pageDev = require(pageDevPath);
+let pageDev = require(pageDev);
 
 if (opts.port === '<%= port %>')
     opts.port = 8080;
@@ -31,8 +31,8 @@ app.push.apply(app, _.chain([
     // 入口页面路由
     select(match('/:page'), async ($) => {
         let tpl = pageDev({
-            vendor: `/${rawPaths.assetPagePath}/vendor.js`,
-            page: `/${rawPaths.assetPagePath}/${$.url.page}.js`
+            vendor: `/${rawPaths.assetPage}/vendor.js`,
+            page: `/${rawPaths.assetPage}/${$.url.page}.js`
         });
 
         // 插入自动重载等工具函数到页面
@@ -40,10 +40,10 @@ app.push.apply(app, _.chain([
     }),
 
     // favicon
-    select('/favicon.ico', kit.readFile(faviconPath)),
+    select('/favicon.ico', kit.readFile(favicon)),
 
     // 静态资源
-    [assetPath, srcPath].map(path => select(`/${rawPaths.assetPath}`, proxy.static({
+    [asset, src].map(path => select(`/${rawPaths.asset}`, proxy.static({
         root: path,
         onFile: _.ary(serverHelper.watch, 1)
     })))
@@ -53,14 +53,14 @@ app.push.apply(app, _.chain([
     // 载入 mock 入口点
     let isLoadMock = true;
     try {
-        require.resolve(mockPath);
-        kit.logs(`load module "${mockPath}"`);
+        require.resolve(mock);
+        kit.logs(`load module "${mock}"`);
     } catch (err) {
         isLoadMock = false;
-        kit.logs(br.yellow(`skip module "${mockPath}"`));
+        kit.logs(br.yellow(`skip module "${mock}"`));
     }
 
-    if (isLoadMock) require(mockPath)(app, opts);
+    if (isLoadMock) require(mock)(app, opts);
 
     await app.listen(opts.port);
 

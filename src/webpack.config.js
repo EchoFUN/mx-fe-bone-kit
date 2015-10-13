@@ -3,18 +3,18 @@ import kit from 'nokit';
 import config from './public-config';
 
 let {
-    srcPagePath, packageJsonPath, assetPagePath
+    srcPage, packageJson, assetPage
 } = config.paths;
 
 let isProduction = process.env.NODE_ENV === 'production';
 let { _ } = kit;
 
-let entry = kit.globSync(`${srcPagePath}/**/*.js`).reduce((ret, p) => {
+let entry = kit.globSync(`${srcPage}/**/*.js`).reduce((ret, p) => {
     ret[kit.path.basename(p, '.js')] = p;
     return ret;
 }, {});
 
-entry.vendor = _.keys(require(packageJsonPath).dependencies);
+entry.vendor = _.keys(require(packageJson).dependencies);
 
 let self = {
     entry: entry,
@@ -29,7 +29,7 @@ let self = {
 
     output: {
         filename: isProduction ? '[name].min.js' : '[name].js',
-        path: assetPagePath
+        path: assetPage
     },
 
     module: {

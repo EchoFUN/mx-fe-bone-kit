@@ -1,8 +1,8 @@
 import kit from 'nokit';
 import config from './public-config';
 
-let { hashMapPath, assetPath,
-    srcPagePath, pageDevPath
+let { hashMap, asset,
+    srcPage, pageDev
 } = config.paths;
 
 let { rawPaths } = config;
@@ -11,7 +11,7 @@ let br = kit.require('brush');
 let jhash = kit.require('jhash');
 jhash.setSymbols('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
-function hashSuffix (hashMapPath) {
+function hashSuffix (hashMap) {
     let map = {};
     return kit._.assign(function (f) {
         var src;
@@ -20,7 +20,7 @@ function hashSuffix (hashMapPath) {
         return map[src] = kit.path.relative(cwd, f.dest + '');
     }, {
         onEnd: function () {
-            return kit.outputJson(hashMapPath, map);
+            return kit.outputJson(hashMap, map);
         }
     });
 }
@@ -32,7 +32,7 @@ export default (opts) => {
     let drives = kit.require('drives');
 
     let compileCDN = (hashMap) => {
-        return kit.warp(`${assetPath}/**/*.js`)
+        return kit.warp(`${asset}/**/*.js`)
         .load(drives.reader({ isCache: false }))
         .load((f) => {
             f.set(f.contents.replace(regCDN, function (m, left, p, right) {
@@ -45,27 +45,27 @@ export default (opts) => {
                 return left + p + right;
             }));
         })
-        .run(assetPath);
+        .run(asset);
     };
 
     let compileTpl = (hashMap) => {
-        let list = kit.globSync(`${srcPagePath}/**/*.js`);
+        let list = kit.globSync(`${srcPage}/**/*.js`);
         list.forEach((path) => {
             let name = kit.path.basename(path, '.js');
-            let tpl = require(pageDevPath)({
-                vendor: opts.cdnPrefix + '/' + hashMap[`${rawPaths.assetPagePath}/vendor.min.js`],
-                page: opts.cdnPrefix + '/' + hashMap[`${rawPaths.assetPagePath}/${name}.min.js`]
+            let tpl = require(pageDev)({
+                vendor: opts.cdnPrefix + '/' + hashMap[`${rawPaths.assetPage}/vendor.min.js`],
+                page: opts.cdnPrefix + '/' + hashMap[`${rawPaths.assetPage}/${name}.min.js`]
             });
-            kit.outputFileSync(`${assetPath}/${name}.html`, tpl);
+            kit.outputFileSync(`${asset}/${name}.html`, tpl);
         });
     };
 
-    return kit.warp(`${assetPath}/**`)
+    return kit.warp(`${asset}/**`)
     .load(drives.reader({ isCache: false, encoding: null }))
-    .load(hashSuffix(hashMapPath))
-    .run(assetPath)
+    .load(hashSuffix(hashMap))
+    .run(asset)
     .then(() => {
-        return kit.readJson(hashMapPath);
+        return kit.readJson(hashMap);
     }).then(async (hashMap) =>
         await * [compileCDN(hashMap), compileTpl(hashMap)]
     );
