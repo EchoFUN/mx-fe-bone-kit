@@ -13,7 +13,6 @@ let proxy = kit.require('proxy');
 let { match, select } = proxy;
 let serverHelper = proxy.serverHelper();
 let opts = JSON.parse(process.argv[2]);
-let pageDev = require(pageDev);
 
 if (opts.port === '<%= port %>')
     opts.port = 8080;
@@ -30,7 +29,7 @@ app.push.apply(app, _.chain([
 
     // 入口页面路由
     select(match('/:page'), async ($) => {
-        let tpl = pageDev({
+        let tpl = require(pageDev)({
             vendor: `/${rawPaths.assetPage}/vendor.js`,
             page: `/${rawPaths.assetPage}/${$.url.page}.js`
         });
