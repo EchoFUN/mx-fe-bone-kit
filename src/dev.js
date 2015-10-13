@@ -1,8 +1,10 @@
 import kit from 'nokit';
-import {
-    webpackConfigPath, srcJsPagePath,
+import config from './public-config';
+
+let {
+    webpackConfigPath, srcPagePath,
     packageJsonPath, mockPath
-} from './public-env';
+} = config.paths;
 
 let br = kit.require('brush');
 
@@ -33,7 +35,7 @@ export default async (opts) => {
         [webpackConfigPath, packageJsonPath],
         { handler: runWebpack }
     );
-    kit.watchDir(srcJsPagePath, {
+    kit.watchDir(srcPagePath, {
         patterns: '*.js',
         handler: (type) => {
             if (type === 'modify') { return; }

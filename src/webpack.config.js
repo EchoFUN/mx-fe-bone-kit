@@ -1,11 +1,15 @@
 import webpack from 'webpack';
 import kit from 'nokit';
-import { srcJsPagePath, packageJsonPath, assetJsPagePath } from './public-env';
+import config from './public-config';
+
+let {
+    srcPagePath, packageJsonPath, assetJsPagePath
+} = config.paths;
 
 let isProduction = process.env.NODE_ENV === 'production';
 let { _ } = kit;
 
-let entry = kit.globSync(`${srcJsPagePath}/**/*.js`).reduce((ret, p) => {
+let entry = kit.globSync(`${srcPagePath}/**/*.js`).reduce((ret, p) => {
     ret[kit.path.basename(p, '.js')] = p;
     return ret;
 }, {});

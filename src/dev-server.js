@@ -1,10 +1,11 @@
 import kit from 'nokit';
 import utils from './utils';
-import {
+import config from './public-config';
+
+let {
     pageDevPath, assetPath, mockPath,
     srcPath, faviconPath
-} from './public-env';
-
+} = config.paths;
 let { _ } = kit;
 let br = kit.require('brush');
 let proxy = kit.require('proxy');

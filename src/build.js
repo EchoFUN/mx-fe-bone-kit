@@ -1,9 +1,9 @@
 import kit from 'nokit';
-import publicEnv from './public-env';
+import { paths } from './public-config';
 
 let { hashMapPath, assetJsPath, assetPath,
-    srcJsPagePath, pageDevPath
-} = publicEnv;
+    srcPagePath, pageDevPath
+} = paths;
 
 let cwd = process.cwd();
 let br = kit.require('brush');
@@ -48,7 +48,7 @@ export default (opts) => {
     };
 
     let compileTpl = (hashMap) => {
-        let list = kit.globSync(`${srcJsPagePath}/**/*.js`);
+        let list = kit.globSync(`${srcPagePath}/**/*.js`);
         list.forEach((path) => {
             let name = kit.path.basename(path, '.js');
             let tpl = require(pageDevPath)({
