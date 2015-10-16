@@ -27,6 +27,20 @@ app.push.apply(app, _.chain([
 
     serverHelper,
 
+    // provide proxy auto config.
+    // pac address is http://127.0.0.1:${opts.port}/${opts.pac}
+    // graphic tutorials: http://www.artica.fr/download/Proxy_Configuration_Mac_OSX_Leopard.pdf
+    // see https://support.apple.com/kb/PH10934?locale=en_US
+    // see https://en.wikipedia.org/wiki/Proxy_auto-config
+    select(opts.pac, async ($) => {
+        $.body =`function FindProxyForURL(url, host) {
+                    if (shExpMatch(host, "${opts.host}")) {
+                        return "PROXY 127.0.0.1:${opts.port}";
+                    }
+                    return "DIRECT";
+                }`;
+    }),
+
     // 入口页面路由
     select(match('/:page'), async ($) => {
         let tpl = require(pageDev)({
@@ -45,7 +59,17 @@ app.push.apply(app, _.chain([
     [asset, src].map(path => select(`/${rawPaths.asset}`, proxy.static({
         root: path,
         onFile: _.ary(serverHelper.watch, 1)
-    })))
+    }))),
+
+    // proxy remote domain url demo
+    // select({
+    //     url: 'http://mbox.sankuai.com/demo'
+    // }, async ($) => {
+    //     $.body = 'hello world';
+    // }),
+
+    // transparent proxy
+    select(/.*/, proxy.url())
 ]).flatten().compact().value());
 
 (async () => {
