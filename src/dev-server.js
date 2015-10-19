@@ -1,6 +1,7 @@
 import kit from 'nokit';
 import utils from './utils';
 import config from './public-config';
+import devproxy from './dev-proxy';
 
 let {
     pageDev, asset, mock,
@@ -16,6 +17,8 @@ let opts = JSON.parse(process.argv[2]);
 
 if (opts.port === '<%= port %>')
     opts.port = 8080;
+if (opts.proxyPort === '<%= proxyPort %>')
+    opts.proxyPort = 54321;
 
 utils.checkPort(opts.port);
 
@@ -26,20 +29,6 @@ app.push.apply(app, _.chain([
     utils.accessLog('access:'),
 
     serverHelper,
-
-    // provide proxy auto config.
-    // pac address is http://127.0.0.1:${opts.port}/${opts.pac}
-    // graphic tutorials: http://www.artica.fr/download/Proxy_Configuration_Mac_OSX_Leopard.pdf
-    // see https://support.apple.com/kb/PH10934?locale=en_US
-    // see https://en.wikipedia.org/wiki/Proxy_auto-config
-    select(opts.pac, async ($) => {
-        $.body =`function FindProxyForURL(url, host) {
-                    if (shExpMatch(host, "${opts.host}")) {
-                        return "PROXY 127.0.0.1:${opts.port}";
-                    }
-                    return "DIRECT";
-                }`;
-    }),
 
     // 入口页面路由
     select(match('/:page'), async ($) => {
@@ -59,17 +48,7 @@ app.push.apply(app, _.chain([
     [asset, src].map(path => select(`/${rawPaths.asset}`, proxy.static({
         root: path,
         onFile: _.ary(serverHelper.watch, 1)
-    }))),
-
-    // proxy remote domain url demo
-    // select({
-    //     url: 'http://mbox.sankuai.com/demo'
-    // }, async ($) => {
-    //     $.body = 'hello world';
-    // }),
-
-    // transparent proxy
-    select(/.*/, proxy.url())
+    })))
 ]).flatten().compact().value());
 
 (async () => {
@@ -85,7 +64,9 @@ app.push.apply(app, _.chain([
 
     if (isLoadMock) require(mock)(app, opts);
 
-    await app.listen(opts.port);
-
+    await app.listen(opts.port, opts.proxyPort);
     kit.logs('dev server listen at:', br.cyan(opts.port));
+
+    // start proxy server
+    await devproxy(opts);
 })().catch(kit.throw);
