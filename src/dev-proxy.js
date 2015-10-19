@@ -1,4 +1,5 @@
 import kit from 'nokit';
+import pacSetter from './pac-set';
 
 let {
     _
@@ -35,5 +36,5 @@ export default async(opts) => {
     await app.listen(opts.proxyPort);
     kit.logs('inner pac proxy server listen at:', br.cyan(opts.proxyPort));
 
-    await kit.exec(`echo "kino" | sudo -S networksetup -setautoproxyurl Wi-Fi 'http://127.0.0.1:${opts.proxyPort}/pac?_${new Date().getTime()}'`);
+    await pacSetter(opts.proxyPort);
 };
