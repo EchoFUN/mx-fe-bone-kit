@@ -23,8 +23,8 @@ export default async(opts) => {
         // see https://en.wikipedia.org/wiki/Proxy_auto-config
         select(pacPath, async($) => {
             $.body = `function FindProxyForURL(url, host) {
-                    if (shExpMatch(host, "${opts.host}")) {
-                        return "PROXY 127.0.0.1:${opts.proxyPort}";
+                    if (shExpMatch(host, "${opts.onlineHost}")) {
+                        return "PROXY 127.0.0.1:${opts.transPort}";
                     }
                     return "DIRECT";
                 }`;
@@ -33,8 +33,8 @@ export default async(opts) => {
         select(/.*/, proxy.url(`127.0.0.1:${opts.port}`))
     ]).flatten().compact().value());
 
-    await app.listen(opts.proxyPort);
-    kit.logs('inner pac proxy server listen at:', br.cyan(opts.proxyPort));
+    await app.listen(opts.transPort);
+    kit.logs('inner pac proxy server listen at:', br.cyan(opts.transPort));
 
-    await pacSetter(opts.proxyPort);
+    await pacSetter(opts.transPort);
 };

@@ -17,8 +17,8 @@ let opts = JSON.parse(process.argv[2]);
 
 if (opts.port === '<%= port %>')
     opts.port = 8080;
-if (opts.proxyPort === '<%= proxyPort %>')
-    opts.proxyPort = 54321;
+if (opts.transPort === '<%= transPort %>')
+    opts.transPort = 54321;
 
 utils.checkPort(opts.port);
 
@@ -64,7 +64,7 @@ app.push.apply(app, _.chain([
 
     if (isLoadMock) require(mock)(app, opts);
 
-    await app.listen(opts.port, opts.proxyPort);
+    await app.listen(opts.port, opts.transPort);
     kit.logs('dev server listen at:', br.cyan(opts.port));
 
     // start proxy server
