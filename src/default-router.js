@@ -5,12 +5,8 @@ import config from './public-config';
 let proxy = kit.require('proxy');
 let serverHelper = proxy.serverHelper();
 
-let {
-    match, select
-} = proxy;
-let {
-    _
-} = kit;
+let { match, select } = proxy;
+let { _ } = kit;
 
 export default (app, opts) => {
     let rawPaths = config.rawPaths;
@@ -18,8 +14,10 @@ export default (app, opts) => {
         pageDev, asset,
         src, favicon
     } = config.paths;
+
     // 默认路由服务
     app.push.apply(app, _.chain([
+
         // 入口页面路由
         select(match('/:page'), async($) => {
             let tpl = require(pageDev)({
@@ -39,5 +37,6 @@ export default (app, opts) => {
             root: path,
             onFile: _.ary(serverHelper.watch, 1)
         })))
+
     ]).flatten().compact().value());
 };

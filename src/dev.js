@@ -19,12 +19,13 @@ function runWebpack () {
 }
 
 export default async (opts) => {
+    // Get sudo permission
+    await kit.spawn('sudo', ['-v']);
+
+
     kit.monitorApp({
         bin: 'babel-node',
-        args: [require.resolve('./dev-server'), kit._.pick(
-            opts,
-            opts.options.map(o => o.long.slice(2))
-        )],
+        args: [require.resolve('./dev-server'), opts],
         watchList: [kit.path.dirname(mock) + '/**/*.js']
     });
 

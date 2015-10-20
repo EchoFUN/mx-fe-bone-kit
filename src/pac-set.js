@@ -4,7 +4,7 @@ export default {
     on: async (opts) => {
         let time = new Date().getTime();
         let host = '127.0.0.1';
-        let pacPath = `http://${host}:${opts.transPort}/pac?_${time}`;
+        let pacPath = `http://${host}:${opts.pacPort}/pac?_${time}`;
         try {
             await kit.spawn('sudo' , ['networksetup', '-setautoproxyurl', opts.ethernet, `${pacPath}`]);
         } catch (err){

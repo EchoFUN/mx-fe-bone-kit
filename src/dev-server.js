@@ -1,7 +1,7 @@
 import kit from 'nokit';
 import utils from './utils';
 import config from './public-config';
-import devproxy from './dev-proxy';
+import devProxy from './dev-proxy';
 
 let {
     mock
@@ -11,13 +11,6 @@ let proxy = kit.require('proxy');
 let serverHelper = proxy.serverHelper();
 
 let opts = JSON.parse(process.argv[2]);
-
-if (opts.port === '<%= port %>')
-    opts.port = 8080;
-if (opts.transPort === '<%= transPort %>')
-    opts.transPort = 54321;
-
-utils.checkPort(opts.port);
 
 // 总入口服务
 let app = proxy.flow();
@@ -40,9 +33,11 @@ try {
 if (isLoadMock) require(mock)(app, opts);
 
 (async() => {
-    await app.listen(opts.port, opts.transPort);
-    kit.logs('dev server listen at:', br.cyan(opts.port));
+    await app.listen(0);
+    let { port } = app.server.address();
+
+    kit.logs('dev server listen at:', br.cyan(port));
 
     // start proxy server
-    await devproxy(opts);
+    await devProxy(opts, port);
 })().catch(kit.throw);
