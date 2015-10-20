@@ -1,11 +1,5 @@
 import kit from 'nokit';
-import config from './public-config';
 
-let { hashMap, asset,
-    srcPage, pageDev
-} = config.paths;
-
-let { rawPaths } = config;
 let cwd = process.cwd();
 let br = kit.require('brush');
 let jhash = kit.require('jhash');
@@ -32,7 +26,7 @@ export default (opts) => {
     let drives = kit.require('drives');
 
     let compileCDN = (hashMap) => {
-        return kit.warp(`${asset}/**/*.js`)
+        return kit.warp(`${opts.asset}/**/*.js`)
         .load(drives.reader({ isCache: false }))
         .load((f) => {
             f.set(f.contents.replace(regCDN, function (m, left, p, right) {
@@ -45,27 +39,27 @@ export default (opts) => {
                 return left + p + right;
             }));
         })
-        .run(asset);
+        .run(opts.asset);
     };
 
     let compileTpl = (hashMap) => {
-        let list = kit.globSync(`${srcPage}/**/*.js`);
+        let list = kit.globSync(`${opts.srcPage}/**/*.js`);
         list.forEach((path) => {
             let name = kit.path.basename(path, '.js');
-            let tpl = require(pageDev)({
-                vendor: opts.cdnPrefix + '/' + hashMap[`${rawPaths.assetPage}/vendor.min.js`],
-                page: opts.cdnPrefix + '/' + hashMap[`${rawPaths.assetPage}/${name}.min.js`]
+            let tpl = require(`${cwd}/${opts.pageDev}`)({
+                vendor: opts.cdnPrefix + '/' + hashMap[`${opts.assetPage}/vendor.min.js`],
+                page: opts.cdnPrefix + '/' + hashMap[`${opts.assetPage}/${name}.min.js`]
             });
-            kit.outputFileSync(`${asset}/${name}.html`, tpl);
+            kit.outputFileSync(`${opts.asset}/${name}.html`, tpl);
         });
     };
 
-    return kit.warp(`${asset}/**`)
+    return kit.warp(`${opts.asset}/**`)
     .load(drives.reader({ isCache: false, encoding: null }))
-    .load(hashSuffix(hashMap))
-    .run(asset)
+    .load(hashSuffix(opts.hashMap))
+    .run(opts.asset)
     .then(() => {
-        return kit.readJson(hashMap);
+        return kit.readJson(opts.hashMap);
     }).then(async (hashMap) =>
         await * [compileCDN(hashMap), compileTpl(hashMap)]
     );

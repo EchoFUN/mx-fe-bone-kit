@@ -1,10 +1,4 @@
 import kit from 'nokit';
-import config from './public-config';
-
-let {
-    webpackConfig, srcPage,
-    packageJson, mock
-} = config.paths;
 
 let br = kit.require('brush');
 
@@ -22,21 +16,22 @@ export default async (opts) => {
     // Get sudo permission
     await kit.spawn('sudo', ['-v']);
 
+    process.env['mx-fe-bone-opts'] = JSON.stringify(opts);
 
     kit.monitorApp({
         bin: 'babel-node',
         args: [require.resolve('./dev-server'), opts],
-        watchList: [kit.path.dirname(mock) + '/**/*.js']
+        watchList: [kit.path.dirname(opts.mock) + '/**/*.js']
     });
 
     await kit.sleep(1000);
 
     runWebpack();
     kit.watchFiles(
-        [webpackConfig, packageJson],
+        ['webpack.config.js', 'package.json'],
         { handler: runWebpack }
     );
-    kit.watchDir(srcPage, {
+    kit.watchDir(opts.srcPage, {
         patterns: '*.js',
         handler: (type) => {
             if (type === 'modify') { return; }

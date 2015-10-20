@@ -1,20 +1,17 @@
 import webpack from 'webpack';
 import kit from 'nokit';
-import config from './public-config';
 
-let {
-    srcPage, packageJson, assetPage
-} = config.paths;
 
 let isProduction = process.env.NODE_ENV === 'production';
 let { _ } = kit;
+let opts = JSON.parse(process.env['mx-fe-bone-opts']);
 
-let entry = kit.globSync(`${srcPage}/**/*.js`).reduce((ret, p) => {
-    ret[kit.path.basename(p, '.js')] = p;
+let entry = kit.globSync(`${opts.srcPage}/**/*.js`).reduce((ret, p) => {
+    ret[kit.path.basename(p, '.js')] = './' + p;
     return ret;
 }, {});
 
-entry.vendor = _.keys(require(packageJson).dependencies);
+entry.vendor = _.keys(require(`${process.cwd()}/package.json`).dependencies);
 
 let self = {
     entry: entry,
@@ -29,7 +26,7 @@ let self = {
 
     output: {
         filename: isProduction ? '[name].min.js' : '[name].js',
-        path: assetPage
+        path: opts.assetPage
     },
 
     module: {

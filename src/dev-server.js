@@ -1,16 +1,12 @@
 import kit from 'nokit';
 import utils from './utils';
-import config from './public-config';
 import devProxy from './dev-proxy';
 
-let {
-    mock
-} = config.paths;
 let br = kit.require('brush');
 let proxy = kit.require('proxy');
 let serverHelper = proxy.serverHelper();
-
 let opts = JSON.parse(process.argv[2]);
+let mock = `${process.cwd()}/${opts.mock}`;
 
 // 总入口服务
 let app = proxy.flow();
@@ -33,6 +29,7 @@ try {
 if (isLoadMock) require(mock)(app, opts);
 
 (async() => {
+
     await app.listen(0);
     let { port } = app.server.address();
 
@@ -40,4 +37,5 @@ if (isLoadMock) require(mock)(app, opts);
 
     // start proxy server
     await devProxy(opts, port);
+
 })().catch(kit.throw);
