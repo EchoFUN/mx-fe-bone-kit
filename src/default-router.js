@@ -18,8 +18,18 @@ export default (app, opts) => {
     // 默认路由服务
     app.push.apply(app, _.chain([
 
+        select(/^\/$/, async ($) => {
+            if(await kit.exists(`${src}/page/demo.js`))
+                $.res.setHeader('Location', '/demo');
+            else
+                return $.next();
+        }),
+
+        // favicon
+        select('/favicon.ico', kit.readFile(favicon)),
+
         // 入口页面路由
-        select(match('/:page'), async($) => {
+        select(match('/:page'), async ($) => {
             let tpl = require(pageDev)({
                 vendor: `/${rawPaths.assetPage}/vendor.js`,
                 page: `/${rawPaths.assetPage}/${$.url.page}.js`
@@ -28,9 +38,6 @@ export default (app, opts) => {
             // 插入自动重载等工具函数到页面
             $.body = tpl + kit.browserHelper();
         }),
-
-        // favicon
-        select('/favicon.ico', kit.readFile(favicon)),
 
         // 静态资源
         [asset, src].map(path => select(`/${rawPaths.asset}`, proxy.static({
