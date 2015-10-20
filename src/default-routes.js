@@ -13,10 +13,11 @@ export default (app, opts) => {
     app.push.apply(app, _.chain([
 
         select(/^\/$/, async ($) => {
-            if(await kit.exists(`${opts.src}/page/demo.js`))
-                $.res.setHeader('Location', '/demo');
-            else
+            if(!await kit.exists(`${opts.src}/page/demo.js`))
                 return $.next();
+
+            $.res.setHeader('Location', '/demo');
+            $.res.statusCode = 302;
         }),
 
         // favicon
