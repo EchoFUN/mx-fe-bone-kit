@@ -2,7 +2,7 @@
   "name": "mx-fe-bone-kit",
   "description": "the kit of mx-fe-bone",
   "author": "mx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "no": "no",
     "prepublish": "no build"
