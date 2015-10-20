@@ -12,7 +12,7 @@ let br = kit.require('brush');
 
 let pacPath = '/pac';
 
-export default async(opts) => {
+export default async (opts) => {
     let app = proxy.flow();
 
     app.push.apply(app, _.chain([
@@ -36,5 +36,5 @@ export default async(opts) => {
     await app.listen(opts.transPort);
     kit.logs('inner pac proxy server listen at:', br.cyan(opts.transPort));
 
-    await pacSetter(opts.transPort);
+    await pacSetter.on(opts);
 };
