@@ -14,7 +14,8 @@ function runWebpack () {
 
 export default async (opts) => {
     // Get sudo permission
-    await kit.spawn('sudo', ['-v']);
+    if (!opts.interactionOff)
+        await kit.spawn('sudo', ['-p', '请输入 sudo 密码: ', '-v']);
 
     process.env['mx-fe-bone-opts'] = JSON.stringify(opts);
 

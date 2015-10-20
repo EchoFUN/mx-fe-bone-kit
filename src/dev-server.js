@@ -33,8 +33,6 @@ if (isLoadMock) require(mock)(app, opts);
     await app.listen(0);
     let { port } = app.server.address();
 
-    kit.logs('dev server listen at:', br.cyan(port));
-
     // start proxy server
     await devProxy(opts, port);
 

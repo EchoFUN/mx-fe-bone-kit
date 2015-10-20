@@ -31,8 +31,7 @@ export default async (opts, port) => {
 
     await app.listen(opts.pacPort);
 
-    kit.logs('pac server listen at:', br.cyan(opts.pacPort));
-    kit.logs('dev proxy:', br.cyan(opts.devHost), '->', br.cyan(port));
+    kit.logs('dev proxy:', br.cyan(opts.devHost), '->', br.cyan(`127.0.0.1:${port}`));
 
     await pacSetter.on(opts);
 };
