@@ -37,7 +37,7 @@ try {
     isLoadMock = false;
     kit.logs(br.yellow(`skip module "${mock}"`));
 }
-if (isLoadMock) require(mock)(app, opts, config, utils);
+if (isLoadMock) require(mock)(app, opts);
 
 (async() => {
     await app.listen(opts.port, opts.transPort);

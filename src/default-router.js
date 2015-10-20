@@ -1,5 +1,7 @@
 // 这只是个示例文件，不会被版本跟踪
 import kit from 'nokit';
+import config from './public-config';
+
 let proxy = kit.require('proxy');
 let serverHelper = proxy.serverHelper();
 
@@ -10,7 +12,7 @@ let {
     _
 } = kit;
 
-export default (app, opts, config) => {
+export default (app, opts) => {
     let rawPaths = config.rawPaths;
     let {
         pageDev, asset,
