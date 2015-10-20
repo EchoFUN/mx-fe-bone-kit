@@ -9,6 +9,7 @@ function hashSuffix (hashMap) {
     let map = {};
     return kit._.assign(function (f) {
         var src;
+        if (f.isDir) return;
         src = kit.path.relative(cwd, f.dest + '');
         f.dest.name += '.' + jhash.hash(f.contents);
         return map[src] = kit.path.relative(cwd, f.dest + '');
