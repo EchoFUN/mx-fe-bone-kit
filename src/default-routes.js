@@ -13,7 +13,7 @@ export default (app, opts) => {
     app.push.apply(app, _.chain([
 
         select(/^\/$/, async ($) => {
-            if(!await kit.exists(`${opts.src}/page/demo.js`))
+            if(!await kit.exists(`${opts.srcPage}/demo.js`))
                 return $.next();
 
             $.res.setHeader('Location', '/demo');
