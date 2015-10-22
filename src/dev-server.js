@@ -7,6 +7,7 @@ let proxy = kit.require('proxy');
 let serverHelper = proxy.serverHelper();
 let opts = JSON.parse(process.argv[2]);
 let mock = `${process.cwd()}/${opts.mock}`;
+let port = Number(opts.port) || 8732;
 
 // 总入口服务
 let app = proxy.flow();
@@ -30,8 +31,7 @@ if (isLoadMock) require(mock)(app, opts);
 
 (async() => {
 
-    await app.listen(0);
-    let { port } = app.server.address();
+    await app.listen(port);
 
     // start proxy server
     await devProxy(opts, port);
