@@ -14,7 +14,7 @@ function runWebpack () {
 
 export default async (opts) => {
     // Get sudo permission
-    if (!opts.interactionOff)
+    if (opts.pac === 'on')
         await kit.spawn('sudo', ['-p', '请输入 sudo 密码: ', '-v']);
 
     process.env['mx-fe-bone-opts'] = JSON.stringify(opts);
@@ -27,16 +27,18 @@ export default async (opts) => {
 
     await kit.sleep(1000);
 
-    runWebpack();
-    kit.watchFiles(
-        ['webpack.config.js', 'package.json'],
-        { handler: runWebpack }
-    );
-    kit.watchDir(opts.srcPage, {
-        patterns: '*.js',
-        handler: (type) => {
-            if (type === 'modify') { return; }
-            runWebpack();
-        }
-    });
+    if (opts.webpack === 'on') {
+        runWebpack();
+        kit.watchFiles(
+            ['webpack.config.js', 'package.json'],
+            { handler: runWebpack }
+        );
+        kit.watchDir(opts.srcPage, {
+            patterns: '*.js',
+            handler: (type) => {
+                if (type === 'modify') { return; }
+                runWebpack();
+            }
+        });
+    }
 };

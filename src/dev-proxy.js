@@ -7,7 +7,7 @@ let br = kit.require('brush');
 
 let pacPath = '/pac';
 
-export default async (opts, port) => {
+export default async (opts) => {
     let app = proxy.flow();
 
     app.push(
@@ -26,12 +26,12 @@ export default async (opts, port) => {
                 }`;
         }),
 
-        proxy.url(`127.0.0.1:${port}`)
+        proxy.url(`127.0.0.1:${opts.port}`)
     );
 
     await app.listen(opts.pacPort);
 
-    kit.logs('dev proxy:', br.cyan(opts.devHost), '->', br.cyan(`127.0.0.1:${port}`));
+    kit.logs('dev proxy:', br.cyan(opts.devHost), '->', br.cyan(`127.0.0.1:${opts.port}`));
 
     await pacSetter.on(opts);
 };
