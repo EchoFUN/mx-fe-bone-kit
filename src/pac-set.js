@@ -4,7 +4,7 @@ let br = kit.require('brush');
 export default {
     on: async (opts) => {
         let host = '127.0.0.1';
-        let pacUrl = `http://${host}:${opts.pacPort}/pac`;
+        let pacUrl = `http://${host}:${opts.pacPort}`;
         kit.logs(`pac url:`, br.cyan(pacUrl));
 
         if (opts.pac === 'on')
